@@ -1,8 +1,8 @@
 {
-  "name": "codetegaelectron",
-  "productName": "codetegaelectron",
+  "name": "NoBPM-Mutes",
+  "productName": "NoBPM-Mutes",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "NoBPM-Mutes",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
@@ -36,8 +36,8 @@
   },
   "keywords": [],
   "author": {
-    "name": "techbret",
-    "email": "bret@techbret.com"
+    "name": "F.Million",
+    "email": "fabrice.million@gmail.com"
   },
   "license": "MIT",
   "dependencies": {
