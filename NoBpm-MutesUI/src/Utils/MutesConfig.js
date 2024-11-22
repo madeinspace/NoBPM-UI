@@ -469,6 +469,8 @@ function createMutesManager() {
 		mutesConfig.colorTheme.id = sT.id;
 		mutesConfig.colorTheme.colors.functions = sT.colors.functions;
 		mutesConfig.colorTheme.colors.links = sT.colors.links;
+		mutesConfig.colorTheme.colors.runtime = sT.colors.runtime;
+		mutesConfig.colorTheme.colors.midi = sT.colors.midi;
 	}
 
 	const createEmptyMute = () => {
