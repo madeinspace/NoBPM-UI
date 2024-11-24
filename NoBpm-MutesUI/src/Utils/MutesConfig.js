@@ -24,7 +24,13 @@ const LinkModes = Object.freeze({
 	Toggle: 2,
 });
 
-const Destinations = Object.freeze({
+const SourceType = Object.freeze({
+	CC_VALUE: 0,
+	CC_TOGGLE_VALUE: 1,
+	PROGRAM_CHANGE: 2,
+});
+
+const DestinationType = Object.freeze({
 	MuteChannels: 0,
 	Scenes: 1,
 	Banks: 2,
@@ -34,9 +40,11 @@ const DefaultMachineID = Object.freeze({
 	MidiProgramChangeID: 0xAC01,
 	MidiBankChangeID: 0xAB01,
 	GMMidiMute: 0xAA51,
+	RolandTR6s: 0x0105,
+	RolandTR8s: 0x0106,
 });
 
-const TargetSettingIDs = Object.freeze({
+const SettingIDs = Object.freeze({
 	MidiChannel : 0x1A,
 	ProgramNumber: 0xDA,
 	ToggleOnLevel: 0x3A,
@@ -48,26 +56,33 @@ const TargetSettingIDs = Object.freeze({
 
 function createMutesManager() {
 
-	const setMachineTargetSettingByID = (machine, targetIndex, sid, value) => {
-		for (var s = 0; s < machine.targets[targetIndex].settings.length; s++) {
-			if (machine.targets[targetIndex].settings[s].id == sid) {
-				machine.targets[targetIndex].settings[s].value = value;
+	const setMachineSourceSettingByID = (machine, sourceIndex, sid, value) => {
+		for (var s = 0; s < machine.sources[sourceIndex].settings.length; s++) {
+			if (machine.sources[sourceIndex].settings[s].id == sid) {
+				machine.sources[sourceIndex].settings[s].value = value;
 				break;
 			}
 		}
 	}
 
-	const setTargetLocation = (machine, targetIndex, module, dest, index) => {
+/*
+	const setSourceLocation = (machine, sourceIndex, module, dest, index) => {
 		if (module != MuteModules.Performer) {
-			if (dest != Destinations.MuteChannels) {
+			if (dest != DestinationType.MuteChannels) {
 				throw new Error("Expander modules only have mute channels! (no scenes or banks)");
 			}
 		}
-		machine.targets[targetIndex].location.module = module;
-		machine.targets[targetIndex].location.dest = dest;
-		machine.targets[targetIndex].location.index = index;
+		machine.sources[sourceIndex].destination.module = module;
+		machine.sources[sourceIndex].destination.dest = dest;
+		machine.sources[sourceIndex].destination.index = index;
 	}
+*/
 
+	const activateAllDestinations = (machine) => {
+		for (var s = 0; s < machine.sources.length; s++) {
+			machine.sources[s].destination.active = true;
+		}
+	}
 
 	// Returns an array of all the supported midi machines, each one will have a display name, id number and the mappings
 	const getAllMidiMachines = () => {
@@ -75,31 +90,429 @@ function createMutesManager() {
 			"midiMachines": [
 
 				{
-					display_name: "General MIDI Program Change",
-					id: DefaultMachineID.MidiProgramChangeID,
-					settings: [],
-					targets: [
+					display_name: "Roland TR6s",
+					user_name: "",
+					group: "Drum Machines",
+					id: DefaultMachineID.RolandTR6s,
+					settings: [
 						{
-							display_name: "General MIDI Program Change",
-							default_dest: Destinations.Scenes,
-							location: {
+							id: SettingIDs.MidiChannel,
+							display_name: "MIDI Channel",
+							value: 10,
+							min: 1,
+							max: 16
+						}
+					],
+					sources: [
+						{
+							display_name: "BD Level",
+							user_name: "",
+							default_dest: DestinationType.MuteChannels,
+							destination: {
 								module: MuteModules.Performer,
 								index: 0,
-								dest: Destinations.Scenes,
+								dest: DestinationType.MuteChannels,
+								active: false,
 							},
-							type: "midi_progc",
+							type: SourceType.CC_TOGGLE_VALUE,
 							settings: [
 								{
-									id: TargetSettingIDs.MidiChannel,
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 10,
+									min: 1,
+									max: 16
+								},
+								{
+									cannot_edit: true,
+									id: SettingIDs.ContinuousControlerNumber,
+									display_name: "CC Number",
+									value: 24
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "SD Level",
+							user_name: "",
+							default_dest: DestinationType.MuteChannels,
+							destination: {
+								module: MuteModules.Performer,
+								index: 1,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							type: SourceType.CC_TOGGLE_VALUE,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 10,
+									min: 1,
+									max: 16
+								},
+								{
+									cannot_edit: true,
+									id: SettingIDs.ContinuousControlerNumber,
+									display_name: "CC Number",
+									value: 29
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "LT Level",
+							user_name: "",
+							default_dest: DestinationType.MuteChannels,
+							destination: {
+								module: MuteModules.Performer,
+								index: 2,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							type: SourceType.CC_TOGGLE_VALUE,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 10,
+									min: 1,
+									max: 16
+								},
+								{
+									cannot_edit: true,
+									id: SettingIDs.ContinuousControlerNumber,
+									display_name: "CC Number",
+									value: 48
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "HC Level",
+							user_name: "",
+							default_dest: DestinationType.MuteChannels,
+							destination: {
+								module: MuteModules.Performer,
+								index: 3,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							type: SourceType.CC_TOGGLE_VALUE,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 10,
+									min: 1,
+									max: 16
+								},
+								{
+									cannot_edit: true,
+									id: SettingIDs.ContinuousControlerNumber,
+									display_name: "CC Number",
+									value: 60
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "CH Level",
+							user_name: "",
+							default_dest: DestinationType.MuteChannels,
+							destination: {
+								module: MuteModules.Performer,
+								index: 4,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							type: SourceType.CC_TOGGLE_VALUE,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 10,
+									min: 1,
+									max: 16
+								},
+								{
+									cannot_edit: true,
+									id: SettingIDs.ContinuousControlerNumber,
+									display_name: "CC Number",
+									value: 63,
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "OH Level",
+							user_name: "",
+							default_dest: DestinationType.MuteChannels,
+							destination: {
+								module: MuteModules.Performer,
+								index: 5,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							type: SourceType.CC_TOGGLE_VALUE,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 10,
+									min: 1,
+									max: 16
+								},
+								{
+									cannot_edit: true,
+									id: SettingIDs.ContinuousControlerNumber,
+									display_name: "CC Number",
+									value: 82
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "Reverb Level",
+							user_name: "",
+							default_dest: DestinationType.MuteChannels,
+							destination: {
+								module: MuteModules.Performer,
+								index: 6,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							type: SourceType.CC_TOGGLE_VALUE,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 10,
+									min: 1,
+									max: 16
+								},
+								{
+									cannot_edit: true,
+									id: SettingIDs.ContinuousControlerNumber,
+									display_name: "CC Number",
+									value: 91
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+					]
+
+				},
+
+				{
+					display_name: "Program Change",
+					user_name: "",
+					group: "General MIDI",
+					id: DefaultMachineID.MidiProgramChangeID,
+					settings: [
+						{
+							id: SettingIDs.MidiChannel,
+							display_name: "MIDI Channel",
+							value: 1,
+							min: 1,
+							max: 16
+						}
+					],
+					sources: [
+						{
+							display_name: "Program Change",
+							user_name: "Program 1",
+							default_dest: DestinationType.Scenes,
+							destination: {
+								module: MuteModules.Performer,
+								index: 0,
+								dest: DestinationType.Scenes,
+								active: false,
+							},
+							type: SourceType.PROGRAM_CHANGE,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
 									display_name: "MIDI Channel",
 									value: 1,
 									min: 1,
 									max: 16
 								},
 								{
-									id: TargetSettingIDs.ProgramNumber,
+									id: SettingIDs.ProgramNumber,
 									display_name: "Program Number",
 									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "Program Change",
+							user_name: "Program 2",
+							default_dest: DestinationType.Scenes,
+							destination: {
+								module: MuteModules.Performer,
+								index: 1,
+								dest: DestinationType.Scenes,
+							},
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 1,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ProgramNumber,
+									display_name: "Program Number",
+									value: 1,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "Program Change",
+							user_name: "Program 3",
+							default_dest: DestinationType.Scenes,
+							destination: {
+								module: MuteModules.Performer,
+								index: 2,
+								dest: DestinationType.Scenes,
+								active: false,
+							},
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 1,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ProgramNumber,
+									display_name: "Program Number",
+									value: 2,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "Program Change",
+							user_name: "Program 4",
+							default_dest: DestinationType.Scenes,
+							destination: {
+								module: MuteModules.Performer,
+								index: 3,
+								dest: DestinationType.Scenes,
+								active: false,
+							},
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 1,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ProgramNumber,
+									display_name: "Program Number",
+									value: 3,
 									min: 0,
 									max: 127
 								}
@@ -108,37 +521,238 @@ function createMutesManager() {
 					]
 				},
 				{
-					display_name: "General MIDI Bank Select (MIDI CC 0 - Bank Select)",
+					display_name: "Bank Select (CC #0)",
+					user_name: "",
+					group: "General MIDI",
+					type: SourceType.CC_VALUE,
 					id: DefaultMachineID.MidiBankChangeID,
-					settings: [],
-					targets: [
+					settings: [
 						{
-							display_name: "General MIDI Bank Select (MIDI CC 0 - Bank Select)",
-							default_dest: Destinations.Banks,
-							location: {
+							id: SettingIDs.MidiChannel,
+							display_name: "MIDI Channel",
+							value: 1,
+							min: 1,
+							max: 16
+						},
+						{
+							cannot_edit: true,
+							id: SettingIDs.ContinuousControlerNumber,
+							display_name: "CC Number",
+							value: 0
+						},
+					],
+					sources: [
+						{
+							display_name: "Bank Select",
+							user_name: "Bank 1",
+							default_dest: DestinationType.Banks,
+							destination: {
 								module: MuteModules.Performer,
 								index: 0,
-								dest: Destinations.Banks,
+								dest: DestinationType.Banks,
+								active: false,
 							},
-							type: "midi_cc",
 							settings: [
 								{
-									id: TargetSettingIDs.MidiChannel,
+									id: SettingIDs.MidiChannel,
 									display_name: "MIDI Channel",
 									value: 1,
 									min: 1,
 									max: 16
 								},
 								{
-									id: TargetSettingIDs.ContinuousControlerNumber,
-									display_name: "CC Number",
-									value: 0,
-									cannot_edit: true
-								},
-								{
-									id: TargetSettingIDs.ContinuousControlerValue,
+									id: SettingIDs.ContinuousControlerValue,
 									display_name: "Bank Number",
 									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "Bank Select",
+							user_name: "Bank 2",
+							default_dest: DestinationType.Banks,
+							destination: {
+								module: MuteModules.Performer,
+								index: 1,
+								dest: DestinationType.Banks,
+								active: false,
+							},
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 1,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ContinuousControlerValue,
+									display_name: "Bank Number",
+									value: 1,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "Bank Select",
+							user_name: "Bank 3",
+							default_dest: DestinationType.Banks,
+							destination: {
+								module: MuteModules.Performer,
+								index: 2,
+								dest: DestinationType.Banks,
+								active: false,
+							},
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 1,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ContinuousControlerValue,
+									display_name: "Bank Number",
+									value: 2,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "Bank Select",
+							user_name: "Bank 4",
+							default_dest: DestinationType.Banks,
+							destination: {
+								module: MuteModules.Performer,
+								index: 3,
+								dest: DestinationType.Banks,
+								active: false,
+							},
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 1,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ContinuousControlerValue,
+									display_name: "Bank Number",
+									value: 3,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "Bank Select",
+							user_name: "Bank 5",
+							default_dest: DestinationType.Banks,
+							destination: {
+								module: MuteModules.Performer,
+								index: 4,
+								dest: DestinationType.Banks,
+								active: false,
+							},
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 1,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ContinuousControlerValue,
+									display_name: "Bank Number",
+									value: 4,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "Bank Select",
+							user_name: "Bank 6",
+							default_dest: DestinationType.Banks,
+							destination: {
+								module: MuteModules.Performer,
+								index: 5,
+								dest: DestinationType.Banks,
+								active: false,
+							},
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 1,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ContinuousControlerValue,
+									display_name: "Bank Number",
+									value: 5,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "Bank Select",
+							user_name: "Bank 7",
+							default_dest: DestinationType.Banks,
+							destination: {
+								module: MuteModules.Performer,
+								index: 6,
+								dest: DestinationType.Banks,
+								active: false,
+							},
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 1,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ContinuousControlerValue,
+									display_name: "Bank Number",
+									value: 6,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "Bank Select",
+							user_name: "Bank 8",
+							default_dest: DestinationType.Banks,
+							destination: {
+								module: MuteModules.Performer,
+								index: 7,
+								dest: DestinationType.Banks,
+								active: false,
+							},
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 1,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ContinuousControlerValue,
+									display_name: "Bank Number",
+									value: 7,
 									min: 0,
 									max: 127
 								}
@@ -149,36 +763,187 @@ function createMutesManager() {
 
 				{
 					display_name: "MIDI CC Change",
+					user_name: "",
+					group: "General MIDI",
 					id: DefaultMachineID.ContinuousConrollerChange,
-					settings: [],
-					type: "midi_cc",
-					targets: [
+					settings: [
+						{
+							id: SettingIDs.MidiChannel,
+							display_name: "MIDI Channel",
+							value: 1,
+							min: 1,
+							max: 16
+						}
+					],
+					type: SourceType.CC_VALUE,
+					sources: [
 						{
 							display_name: "MIDI CC Change",
-							default_dest: Destinations.Banks,
-							location: {
+							user_name: "Modulation (CC #1)",
+							default_dest: DestinationType.Banks,
+							destination: {
 								module: MuteModules.Performer,
 								index: 0,
-								dest: Destinations.Banks,
+								dest: DestinationType.MuteChannels,
+								active: false,
 							},
-							type: "midi_cc",
 							settings: [
 								{
-									id: TargetSettingIDs.MidiChannel,
+									id: SettingIDs.MidiChannel,
 									display_name: "MIDI Channel",
 									value: 1,
 									min: 1,
 									max: 16
 								},
 								{
-									id: TargetSettingIDs.ContinuousControlerNumber,
+									id: SettingIDs.ContinuousControlerNumber,
 									display_name: "CC Number",
-									value: 32,
+									value: 1,
 									min: 0,
 									max: 127
 								},
 								{
-									id: TargetSettingIDs.ContinuousControlerValue,
+									id: SettingIDs.ContinuousControlerValue,
+									display_name: "CC Value",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+
+						},
+						{
+							display_name: "MIDI CC Change",
+							user_name: "Breath Controller (CC #2)",
+							default_dest: DestinationType.Banks,
+							destination: {
+								module: MuteModules.Performer,
+								index: 1,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 1,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ContinuousControlerNumber,
+									display_name: "CC Number",
+									value: 2,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ContinuousControlerValue,
+									display_name: "CC Value",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+
+						},
+						{
+							display_name: "MIDI CC Change",
+							user_name: "Balance (CC #8)",
+							default_dest: DestinationType.Banks,
+							destination: {
+								module: MuteModules.Performer,
+								index: 1,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 1,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ContinuousControlerNumber,
+									display_name: "CC Number",
+									value: 8,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ContinuousControlerValue,
+									display_name: "CC Value",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+
+						},
+						{
+							display_name: "MIDI CC Change",
+							user_name: "Expression (CC #11)",
+							default_dest: DestinationType.Banks,
+							destination: {
+								module: MuteModules.Performer,
+								index: 2,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 1,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ContinuousControlerNumber,
+									display_name: "CC Number",
+									value: 11,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ContinuousControlerValue,
+									display_name: "CC Value",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+
+						},
+						{
+							display_name: "MIDI CC Change",
+							user_name: "General Purpose (CC #16)",
+							default_dest: DestinationType.Banks,
+							destination: {
+								module: MuteModules.Performer,
+								index: 3,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 1,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ContinuousControlerNumber,
+									display_name: "CC Number",
+									value: 16,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ContinuousControlerValue,
 									display_name: "CC Value",
 									value: 0,
 									min: 0,
@@ -192,37 +957,570 @@ function createMutesManager() {
 				},
 
 				{
-					display_name: "General MIDI Mute (MIDI CC 7 - Volume)",
+					display_name: "MIDI Mute (MIDI CC 7 - Volume)",
+					user_name: "",
+					group: "General MIDI",
 					id: DefaultMachineID.GMMidiMute,
-					settings: [],
-					targets: [
+					type: SourceType.CC_TOGGLE_VALUE,
+					settings: [
 						{
-							display_name: "MIDI Channel 1",
-							location: {
+							cannot_edit: true,
+							id: SettingIDs.ContinuousControlerNumber,
+							display_name: "CC Number",
+							value: 7
+						}
+					],
+					sources: [
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 1",
+							destination: {
 								module: MuteModules.Performer,
 								index: 0,
-								dest: Destinations.MuteChannels,
+								dest: DestinationType.MuteChannels,
+								active: false,
 							},
-							default_dest: Destinations.MuteChannels,
-							type: "midi_cc_toggle",
-							cc_num: 7,
+							default_dest: DestinationType.MuteChannels,
 							settings: [
 								{
-									id: TargetSettingIDs.MidiChannel,
+									id: SettingIDs.MidiChannel,
 									display_name: "MIDI Channel",
 									value: 1,
 									min: 1,
 									max: 16
 								},
 								{
-									id: TargetSettingIDs.ToggleOnLevel,
+									id: SettingIDs.ToggleOnLevel,
 									display_name: "Un-muted Volume Level",
 									value: 127,
 									min: 0,
 									max: 127
 								},
 								{
-									id: TargetSettingIDs.ToggleOffLevel,
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 2",
+							destination: {
+								module: MuteModules.Performer,
+								index: 1,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							default_dest: DestinationType.MuteChannels,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 2,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 3",
+							destination: {
+								module: MuteModules.Performer,
+								index: 2,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							default_dest: DestinationType.MuteChannels,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 3,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 4",
+							destination: {
+								module: MuteModules.Performer,
+								index: 3,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							default_dest: DestinationType.MuteChannels,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 4,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 5",
+							destination: {
+								module: MuteModules.Performer,
+								index: 4,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							default_dest: DestinationType.MuteChannels,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 5,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 6",
+							destination: {
+								module: MuteModules.Performer,
+								index: 5,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							default_dest: DestinationType.MuteChannels,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 6,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 7",
+							destination: {
+								module: MuteModules.Performer,
+								index: 6,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							default_dest: DestinationType.MuteChannels,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 7,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 8",
+							destination: {
+								module: MuteModules.Performer,
+								index: 7,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							default_dest: DestinationType.MuteChannels,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 8,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 9",
+							destination: {
+								module: MuteModules.Expander1,
+								index: 0,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							default_dest: DestinationType.MuteChannels,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 9,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 10",
+							destination: {
+								module: MuteModules.Expander1,
+								index: 1,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							default_dest: DestinationType.MuteChannels,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 10,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 11",
+							destination: {
+								module: MuteModules.Expander1,
+								index: 2,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							default_dest: DestinationType.MuteChannels,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 11,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 12",
+							destination: {
+								module: MuteModules.Expander1,
+								index: 3,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							default_dest: DestinationType.MuteChannels,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 12,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 13",
+							destination: {
+								module: MuteModules.Expander1,
+								index: 4,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							default_dest: DestinationType.MuteChannels,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 13,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 14",
+							destination: {
+								module: MuteModules.Expander1,
+								index: 5,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							default_dest: DestinationType.MuteChannels,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 14,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 15",
+							destination: {
+								module: MuteModules.Expander1,
+								index: 6,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							default_dest: DestinationType.MuteChannels,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 15,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
+									display_name: "Muted Volume Level",
+									value: 0,
+									min: 0,
+									max: 127
+								}
+							]
+						},
+
+						{
+							display_name: "Volume CC Mute",
+							user_name: "Channel 16",
+							destination: {
+								module: MuteModules.Expander1,
+								index: 7,
+								dest: DestinationType.MuteChannels,
+								active: false,
+							},
+							default_dest: DestinationType.MuteChannels,
+							settings: [
+								{
+									id: SettingIDs.MidiChannel,
+									display_name: "MIDI Channel",
+									value: 16,
+									min: 1,
+									max: 16
+								},
+								{
+									id: SettingIDs.ToggleOnLevel,
+									display_name: "Un-muted Volume Level",
+									value: 127,
+									min: 0,
+									max: 127
+								},
+								{
+									id: SettingIDs.ToggleOffLevel,
 									display_name: "Muted Volume Level",
 									value: 0,
 									min: 0,
@@ -232,8 +1530,11 @@ function createMutesManager() {
 						},
 
 
+
 					]
 				}
+
+
 
 
 			]
@@ -518,37 +1819,50 @@ function createMutesManager() {
 		}
 
 		setColorTheme(muteCfg, getAllColorThemes().color_theme_list[DEFAULT_COLOR_THEME]);
-
+/*
 		for (var pc = 0; pc < MAXIMUM_SCENES; pc++) {
 			var prog_change = getMidiMachineByID(DefaultMachineID.MidiProgramChangeID);
 
-			setMachineTargetSettingByID(prog_change, 0, TargetSettingIDs.MidiChannel, 9);
-			setMachineTargetSettingByID(prog_change, 0, TargetSettingIDs.ProgramNumber, pc);
-			setTargetLocation(prog_change, 0, MuteModules.Performer, Destinations.Scenes, pc);
+			setMachineSourceSettingByID(prog_change, 0, SettingIDs.MidiChannel, 9);
+			setMachineSourceSettingByID(prog_change, 0, SettingIDs.ProgramNumber, pc);
+			setSourceLocation(prog_change, 0, MuteModules.Performer, DestinationType.Scenes, pc);
 
 			muteCfg.midiMachines.push(prog_change);
 		}
 
 		for (var bc = 0; bc < MAXIMUM_BANKS; bc++) {
 			var bank_change = getMidiMachineByID(DefaultMachineID.MidiBankChangeID);
-			setMachineTargetSettingByID(bank_change, 0, TargetSettingIDs.MidiChannel, 9);
-			setMachineTargetSettingByID(bank_change, 0, TargetSettingIDs.ContinuousControlerValue, bc);
-			setTargetLocation(bank_change, 0, MuteModules.Performer, Destinations.Banks, bc);
+			setMachineSourceSettingByID(bank_change, 0, SettingIDs.MidiChannel, 9);
+			setMachineSourceSettingByID(bank_change, 0, SettingIDs.ContinuousControlerValue, bc);
+			setSourceLocation(bank_change, 0, MuteModules.Performer, DestinationType.Banks, bc);
 
 			muteCfg.midiMachines.push(bank_change);
 		}
 
 		for (var m = 0; m < MAX_MIDI_CHANNELS; m++) {
 			var mute = getMidiMachineByID(DefaultMachineID.GMMidiMute);
-			setMachineTargetSettingByID(mute, 0, TargetSettingIDs.MidiChannel, m + 1);
+			setMachineSourceSettingByID(mute, 0, SettingIDs.MidiChannel, m + 1);
 
 			if (m < 8) {
-				setTargetLocation(mute, 0, MuteModules.Performer, Destinations.MuteChannels, m);
+				setSourceLocation(mute, 0, MuteModules.Performer, DestinationType.MuteChannels, m);
 			} else {
-				setTargetLocation(mute, 0, MuteModules.Expander1, Destinations.MuteChannels, m - 8);
+				setSourceLocation(mute, 0, MuteModules.Expander1, DestinationType.MuteChannels, m - 8);
 			}
 			muteCfg.midiMachines.push(mute);
 		}
+*/       
+		var bank_change = getMidiMachineByID(DefaultMachineID.MidiBankChangeID);
+		activateAllDestinations(bank_change);
+		muteCfg.midiMachines.push(bank_change);
+
+		var prog_change = getMidiMachineByID(DefaultMachineID.MidiProgramChangeID);
+		activateAllDestinations(prog_change);
+		muteCfg.midiMachines.push(prog_change);
+
+		var mutes = getMidiMachineByID(DefaultMachineID.GMMidiMute);
+		activateAllDestinations(mutes)
+		muteCfg.midiMachines.push(mutes);
+
 		return muteCfg;
 	}
 
