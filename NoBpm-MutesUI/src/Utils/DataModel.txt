@@ -1,0 +1,22 @@
+
+Machines
+* Have a group name - this is so similar things can be grouped - e.g. "General MIDI", "Drum Machines", "Synths" etc
+* Have a display name that cant be edited e.g "Roland TR6s"
+* Have a user name that can be customized e.g "My other stupid drum machine"
+
+Sources/Destinations
+
+* Each machine has 1..N sources
+* A source is something that can be dragged and dropped onto a performer/expander button
+* A destination is where the source has been places (Which module and the index)
+* Not all sources must be placed(dragged) on to the module 
+* If a source has not been placed, then a boolean flag for that source named "active" is set to false
+* If a source HAS been placed, then "active" is set to true
+
+Settings
+
+* Each machine has settings - "eg midi channel for all sources"
+* Each source has is own settings - "e.g setting cc value OR OVERRIDING MIDI CHANNEL .. eg if someone has a particular track on a different channel etc"
+	* IF a source has the same setting as the machine, the source will override the machine setting
+        * IF someone changes a setting (e.g change MIDI channel 10 -> 4) AND the sources also have midi channel as a setting, then all sources need to be iterated and any sources with a MIDI channel 10 would be changed to 4 as per the "global machine setting" - this means if someone has customized a midi channel, then its preserved
+* If a setting (either for machine or source) has a boolean flag "cannot_edit: true" then it should not be shown in the UI and it cannot be changed
