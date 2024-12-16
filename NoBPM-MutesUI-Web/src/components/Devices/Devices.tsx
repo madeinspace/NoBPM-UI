@@ -86,9 +86,9 @@ const Devices: React.FC = () => {
     : muteConfig.midiMachines;
 
   return (
-    <div className="bg-gray-800 text-white p-4 shadow-md flex flex-col space-y-4">
+    <div className="bg-gray-800 text-white p-6 shadow-md flex flex-col space-y-4">
       <div className="flex flex-col space-y-2">
-        <h2 className="text-2xl mb-4">Midi devices</h2>
+        <h2 className="text-2xl mb-4">Midi Devices</h2>
         <label htmlFor="midi-device" className="font-semibold">
           Select MIDI Device:
         </label>

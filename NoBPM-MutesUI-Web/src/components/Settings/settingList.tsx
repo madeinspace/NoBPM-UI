@@ -9,10 +9,10 @@ const SettingsList: React.FC<SettingsListProps> = ({ settings }) => {
         <div
           key={item.id}
           className={`mb-4 p-2 rounded-md shadow-inner ${
-            index % 2 === 0 ? "bg-gray-300" : "bg-gray-400"
+            index % 2 === 0 ? "bg-gray-200" : "bg-gray-300"
           }`}
         >
-          <span className="text-sm font-semibold">{item.display_name}</span>
+          <span className="text-sm text-gray-700">{item.display_name}</span>
         </div>
       ))}
     </div>
