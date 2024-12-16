@@ -1,4 +1,5 @@
 import { Destination } from "./Destination";
+import { SettingItem } from "./SettingItem";
 
 export interface DestinationDetailsProps {
   destination: Destination;
@@ -7,4 +8,8 @@ export interface DestinationDetailsProps {
 export interface NameDisplayProps {
   displayName: string;
   userName: string;
+}
+
+export interface SettingsListProps {
+  settings: SettingItem[];
 }

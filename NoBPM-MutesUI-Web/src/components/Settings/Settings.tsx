@@ -4,6 +4,7 @@ import { useConfig } from "src/app/utils/ConfigContext";
 import { SelectedSource } from "src/types/SelectedSource";
 import NameDisplay from "./nameDisplay";
 import DestinationDetails from "./destinationDetails";
+import SettingsList from "./settingList";
 
 export const Settings: React.FC = () => {
   const { selectedSource } = useConfig();
@@ -32,16 +33,7 @@ export const Settings: React.FC = () => {
             userName={selectedSource.user_name}
           />
 
-          {selectedSource.settings.map((item, index) => (
-            <div
-              key={item.id}
-              className={`mb-4 p-4 rounded-md shadow-inner ${
-                index % 2 === 0 ? "bg-gray-300" : "bg-gray-400"
-              }`}
-            >
-              <span className="text-lg font-semibold">{item.display_name}</span>
-            </div>
-          ))}
+          <SettingsList settings={selectedSource.settings} />
           <DestinationDetails destination={selectedSource.destination} />
         </div>
       ) : (
