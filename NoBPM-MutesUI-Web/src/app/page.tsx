@@ -1,8 +1,8 @@
 "use client";
-import Devices from "src/components/Devices";
-import { Modules } from "src/components/Modules";
+import Devices from "src/components/Devices/Devices";
+import { Modules } from "src/components/Modules/Modules";
 import Navigation from "src/components/Navigation";
-import { Settings } from "src/components/Settings";
+import { Settings } from "src/components/Settings/Settings";
 
 export default function Home() {
   return (

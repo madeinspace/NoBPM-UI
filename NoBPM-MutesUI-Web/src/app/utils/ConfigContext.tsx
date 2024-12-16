@@ -13,6 +13,7 @@ import createMutesManager, {
   MutesConfig,
   MutesManager,
 } from "./MutesConfig";
+import { Source } from "src/types/MidiMachinesSources";
 
 interface ConfigContextProps {
   mutesManager: MutesManager;
@@ -20,6 +21,8 @@ interface ConfigContextProps {
   setMuteConfig: React.Dispatch<React.SetStateAction<MutesConfig>>;
   addMidiMachine: (machine: MidiMachine) => void;
   removeMidiMachine: (id: number) => void;
+  editMidiMachineSettings: (machine: Source) => void;
+  selectedSource: Source;
 }
 
 interface ConfigProviderProps {
@@ -34,6 +37,8 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
     mutesManager.createEmptyMutesConfig()
   );
   const [moduleAssignments, setModuleAssignments] = useState<any[]>([]);
+
+  const [selectedSource, setSlectedSource] = useState<any>({});
 
   const addMidiMachine = (machine: MidiMachine) => {
     setMuteConfig((prevConfig) => ({
@@ -53,6 +58,11 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
 
   const editMidiMachineMutes = (machine: MidiMachine) => {};
 
+  const editMidiMachineSettings = (machine: Source) => {
+    console.log("editing setting from machine: ", machine);
+    setSlectedSource(machine);
+  };
+
   const assignSourceToModule = (assignment: any) => {
     setModuleAssignments((prev) => [...prev, assignment]);
     // Optionally, persist to localStorage or backend
@@ -66,6 +76,8 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
         setMuteConfig,
         addMidiMachine,
         removeMidiMachine,
+        editMidiMachineSettings,
+        selectedSource,
       }}
     >
       {children}

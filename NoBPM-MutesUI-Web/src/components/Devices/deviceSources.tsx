@@ -1,12 +1,13 @@
 // components/DeviceSources.tsx
 
 import React from "react";
-import { MidiMachine } from "../types/MidiMachine";
+import { MidiMachine } from "../../types/MidiMachine";
 import { Source } from "src/types/MidiMachinesSources";
+import { useConfig } from "src/app/utils/ConfigContext";
 
 interface DeviceSourcesProps {
   device: MidiMachine;
-  onEdit: (device: MidiMachine) => void;
+  onEdit: (device: Source) => void;
   //   onRemove: (id: number) => void;
 }
 
@@ -38,7 +39,7 @@ const DeviceSources: React.FC<DeviceSourcesProps> = ({
                 </div>
                 <div className="flex space-x-2">
                   <button
-                    onClick={() => onEdit(device)}
+                    onClick={() => onEdit(source)}
                     className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded transition-colors duration-200"
                   >
                     Edit

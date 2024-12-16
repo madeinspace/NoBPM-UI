@@ -1,13 +1,19 @@
 // components/Devices.tsx
 
 import React, { useEffect, useState } from "react";
-import { useConfig } from "../app/utils/ConfigContext";
-import { MidiMachine } from "../types/MidiMachine"; // Adjust the import path as needed
+import { useConfig } from "../../app/utils/ConfigContext";
+import { MidiMachine } from "../../types/MidiMachine"; // Adjust the import path as needed
 import DeviceSources from "./deviceSources";
+import { Source } from "src/types/MidiMachinesSources";
 
 const Devices: React.FC = () => {
-  const { mutesManager, addMidiMachine, removeMidiMachine, muteConfig } =
-    useConfig();
+  const {
+    mutesManager,
+    addMidiMachine,
+    removeMidiMachine,
+    muteConfig,
+    editMidiMachineSettings,
+  } = useConfig();
 
   const [midiMachines, setMidiMachines] = useState<MidiMachine[]>([]);
   const [selectedMachineId, setSelectedMachineId] = useState<number | "">("");
@@ -16,6 +22,8 @@ const Devices: React.FC = () => {
 
   // Fetch MIDI machines on component mount
   useEffect(() => {
+    console.log("muteConfig: ", muteConfig);
+
     const fetchMidiMachines = () => {
       const machines = mutesManager.getAllMidiMachines().midiMachines;
       setMidiMachines(machines);
@@ -51,8 +59,8 @@ const Devices: React.FC = () => {
     setSelectedMachineId(value === "" ? "" : Number(value));
   };
 
-  const handleEditDeviceMutes = (device: MidiMachine) => {
-    console.log("device to edit: ", device);
+  const handleEditDeviceMutes = (device: Source) => {
+    editMidiMachineSettings(device);
   };
 
   const handleToggleAccordion = (id: number) => {
@@ -80,6 +88,7 @@ const Devices: React.FC = () => {
   return (
     <div className="bg-gray-800 text-white p-4 shadow-md flex flex-col space-y-4">
       <div className="flex flex-col space-y-2">
+        <h2 className="text-2xl mb-4">Midi devices</h2>
         <label htmlFor="midi-device" className="font-semibold">
           Select MIDI Device:
         </label>
@@ -107,7 +116,7 @@ const Devices: React.FC = () => {
       </button>
 
       <div className="w-full">
-        <h2 className="text-2xl font-semibold mb-4">Added Devices</h2>
+        <h2 className="text-1xl font-semibold mb-4">Connected Devices:</h2>
         {muteConfig.midiMachines.length === 0 ? (
           <p className="text-gray-400">No devices added yet.</p>
         ) : (
