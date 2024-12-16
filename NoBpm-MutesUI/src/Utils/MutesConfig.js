@@ -55,6 +55,7 @@ const SettingIDs = Object.freeze({
 });
 
 function createMutesManager() {
+
   const setMachineSourceSettingByID = (machine, sourceIndex, sid, value) => {
     for (var s = 0; s < machine.sources[sourceIndex].settings.length; s++) {
       if (machine.sources[sourceIndex].settings[s].id == sid) {
@@ -103,6 +104,7 @@ function createMutesManager() {
           ],
           sources: [
             {
+              id: 0x0001,
               display_name: "BD Level",
               user_name: "",
               default_dest: DestinationType.MuteChannels,
@@ -144,6 +146,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0002,
               display_name: "SD Level",
               user_name: "",
               default_dest: DestinationType.MuteChannels,
@@ -185,6 +188,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0003,
               display_name: "LT Level",
               user_name: "",
               default_dest: DestinationType.MuteChannels,
@@ -226,6 +230,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0004,
               display_name: "HC Level",
               user_name: "",
               default_dest: DestinationType.MuteChannels,
@@ -267,6 +272,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0005,
               display_name: "CH Level",
               user_name: "",
               default_dest: DestinationType.MuteChannels,
@@ -308,6 +314,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0006,
               display_name: "OH Level",
               user_name: "",
               default_dest: DestinationType.MuteChannels,
@@ -349,6 +356,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0007,
               display_name: "Reverb Level",
               user_name: "",
               default_dest: DestinationType.MuteChannels,
@@ -408,6 +416,7 @@ function createMutesManager() {
           ],
           sources: [
             {
+              id: 0x0001,
               display_name: "Program Change",
               user_name: "Program 1",
               default_dest: DestinationType.Scenes,
@@ -436,6 +445,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0002,
               display_name: "Program Change",
               user_name: "Program 2",
               default_dest: DestinationType.Scenes,
@@ -462,6 +472,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0003,
               display_name: "Program Change",
               user_name: "Program 3",
               default_dest: DestinationType.Scenes,
@@ -489,6 +500,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0004,
               display_name: "Program Change",
               user_name: "Program 4",
               default_dest: DestinationType.Scenes,
@@ -540,6 +552,7 @@ function createMutesManager() {
           ],
           sources: [
             {
+              id: 0x0001,
               display_name: "Bank Select",
               user_name: "Bank 1",
               default_dest: DestinationType.Banks,
@@ -567,6 +580,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0002,
               display_name: "Bank Select",
               user_name: "Bank 2",
               default_dest: DestinationType.Banks,
@@ -594,6 +608,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0003,
               display_name: "Bank Select",
               user_name: "Bank 3",
               default_dest: DestinationType.Banks,
@@ -621,6 +636,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0004,
               display_name: "Bank Select",
               user_name: "Bank 4",
               default_dest: DestinationType.Banks,
@@ -648,6 +664,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0005,
               display_name: "Bank Select",
               user_name: "Bank 5",
               default_dest: DestinationType.Banks,
@@ -675,6 +692,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0006,
               display_name: "Bank Select",
               user_name: "Bank 6",
               default_dest: DestinationType.Banks,
@@ -702,6 +720,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0007,
               display_name: "Bank Select",
               user_name: "Bank 7",
               default_dest: DestinationType.Banks,
@@ -729,6 +748,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0008,
               display_name: "Bank Select",
               user_name: "Bank 8",
               default_dest: DestinationType.Banks,
@@ -775,6 +795,7 @@ function createMutesManager() {
           type: SourceType.CC_VALUE,
           sources: [
             {
+              id: 0x0001,
               display_name: "MIDI CC Change",
               user_name: "Modulation (CC #1)",
               default_dest: DestinationType.Banks,
@@ -809,6 +830,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0002,
               display_name: "MIDI CC Change",
               user_name: "Breath Controller (CC #2)",
               default_dest: DestinationType.Banks,
@@ -843,6 +865,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0003,
               display_name: "MIDI CC Change",
               user_name: "Balance (CC #8)",
               default_dest: DestinationType.Banks,
@@ -877,6 +900,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0004,
               display_name: "MIDI CC Change",
               user_name: "Expression (CC #11)",
               default_dest: DestinationType.Banks,
@@ -911,6 +935,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x0005,
               display_name: "MIDI CC Change",
               user_name: "General Purpose (CC #16)",
               default_dest: DestinationType.Banks,
@@ -963,6 +988,7 @@ function createMutesManager() {
           ],
           sources: [
             {
+              id: 0x0001,
               display_name: "Volume CC Mute",
               user_name: "Channel 1",
               destination: {
@@ -998,6 +1024,7 @@ function createMutesManager() {
             },
 
             {
+              id: 0x0002,
               display_name: "Volume CC Mute",
               user_name: "Channel 2",
               destination: {
@@ -1033,6 +1060,7 @@ function createMutesManager() {
             },
 
             {
+              id: 0x0003,
               display_name: "Volume CC Mute",
               user_name: "Channel 3",
               destination: {
@@ -1068,6 +1096,7 @@ function createMutesManager() {
             },
 
             {
+              id: 0x0004,
               display_name: "Volume CC Mute",
               user_name: "Channel 4",
               destination: {
@@ -1103,6 +1132,7 @@ function createMutesManager() {
             },
 
             {
+              id: 0x0005,
               display_name: "Volume CC Mute",
               user_name: "Channel 5",
               destination: {
@@ -1138,6 +1168,7 @@ function createMutesManager() {
             },
 
             {
+              id: 0x0006,
               display_name: "Volume CC Mute",
               user_name: "Channel 6",
               destination: {
@@ -1173,6 +1204,7 @@ function createMutesManager() {
             },
 
             {
+              id: 0x0007,
               display_name: "Volume CC Mute",
               user_name: "Channel 7",
               destination: {
@@ -1208,6 +1240,7 @@ function createMutesManager() {
             },
 
             {
+              id: 0x0008,
               display_name: "Volume CC Mute",
               user_name: "Channel 8",
               destination: {
@@ -1243,6 +1276,7 @@ function createMutesManager() {
             },
 
             {
+              id: 0x0009,
               display_name: "Volume CC Mute",
               user_name: "Channel 9",
               destination: {
@@ -1278,6 +1312,7 @@ function createMutesManager() {
             },
 
             {
+              id: 0x000A,
               display_name: "Volume CC Mute",
               user_name: "Channel 10",
               destination: {
@@ -1313,6 +1348,7 @@ function createMutesManager() {
             },
 
             {
+              id: 0x000B,
               display_name: "Volume CC Mute",
               user_name: "Channel 11",
               destination: {
@@ -1348,6 +1384,7 @@ function createMutesManager() {
             },
 
             {
+              id: 0x000C,
               display_name: "Volume CC Mute",
               user_name: "Channel 12",
               destination: {
@@ -1383,6 +1420,7 @@ function createMutesManager() {
             },
 
             {
+              id: 0x000D,
               display_name: "Volume CC Mute",
               user_name: "Channel 13",
               destination: {
@@ -1417,6 +1455,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x000E,
               display_name: "Volume CC Mute",
               user_name: "Channel 14",
               destination: {
@@ -1451,6 +1490,7 @@ function createMutesManager() {
               ],
             },
             {
+              id: 0x000F,
               display_name: "Volume CC Mute",
               user_name: "Channel 15",
               destination: {
@@ -1486,6 +1526,7 @@ function createMutesManager() {
             },
 
             {
+              id: 0x0010,
               display_name: "Volume CC Mute",
               user_name: "Channel 16",
               destination: {
@@ -1769,11 +1810,11 @@ function createMutesManager() {
   const createEmptyMute = () => {
     return {
       mutes: [false, false, false, false, false, false, false, false],
+
+      // Modes are pairing settings for adjacent mute channels
+      // There are 8 mute channels, so 4 pairs of mode settings
+      // mode[0] = chan1/2 , mode[1]= chan 3/4 , mode[2] = chan 5/6 , mode[3] = chan 7/8
       mode: [
-        LinkModes.None,
-        LinkModes.None,
-        LinkModes.None,
-        LinkModes.None,
         LinkModes.None,
         LinkModes.None,
         LinkModes.None,
